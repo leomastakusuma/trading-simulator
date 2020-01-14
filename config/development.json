@@ -1,0 +1,16 @@
+{  
+    "env" : "dev",
+    "port":9090,
+    "dbConfig": {
+        "host": "localhost",
+        "port": 3360,
+        "user": "root",
+        "password" : "password",
+        "database": "botSaham"
+    },
+    "queryLog":1,
+    "url":"https://www.alphavantage.co/query?",
+    "apiKey":"27L1L41IIB4A25QM",
+    "timeInterval":"5min",
+    "function":"TIME_SERIES_INTRADAY"
+}

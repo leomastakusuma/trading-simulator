@@ -47,16 +47,17 @@ export default class TradingController extends abstractBotEmiten {
                     let jumlah_lot = req.body.jumlah_lot + exist.jumlah_lot
                     let jumlah_lembar = (req.body.jumlah_lot * 100) + exist.jumlah_lembar
                     let total_bayar = (req.body.harga_beli  * (req.body.jumlah_lot * 100))
-                    let rataRataBayar = (total_bayar + exist.total_bayar) / jumlah_lembar
-                    let sales_tax=total_bayar * 0.0015;
-                    let charge=total_bayar * 0.0010;
+                    let rataRataBeli = (total_bayar + exist.total_bayar)/jumlah_lembar
+                    let rataRataTotalBayar = rataRataBeli * jumlah_lembar
+                    let sales_tax=rataRataTotalBayar * 0.0015;
+                    let charge=rataRataTotalBayar * 0.0010;
                     let data = {
-                        'jumlah_lot'  : jumlah_lot ,
-                        'jumlah_lembar':jumlah_lembar,
-                        'harga_beli' : rataRataBayar,
-                        "total_bayar":total_bayar,
-                        'sales_tax' : sales_tax,
-                        'total_charge':charge
+                        'jumlah_lot'    : jumlah_lot ,
+                        'jumlah_lembar' : jumlah_lembar,
+                        'harga_beli'    : rataRataBeli,
+                        "total_bayar"   : rataRataTotalBayar,
+                        'sales_tax'     : sales_tax,
+                        'total_charge'  : charge
                     }
                     this.getModelTrading().updateTrading(data,exist.id,(updateTrading)=>{
                         res.json(updateTrading)

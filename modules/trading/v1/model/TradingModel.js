@@ -8,7 +8,7 @@ export class TradingModel extends abstractQuery {
 	}
 
     listTrading(callback){
-        this.sql ="SELECT DATE_FORMAT(t.create_at,'%Y-%m-%d %H:%i:%s') transaction_date,e.name,t.jumlah_lot,t.jumlah_lembar,FORMAT(t.harga_beli,0) as harga_beli,FORMAT(t.total_bayar,0) as total_bayar ,FORMAT(t.sales_tax,0) as sales_tax from trading as t JOIN emiten as e ON e.id = t.id_emiten";
+        this.sql ="SELECT DATE_FORMAT(t.create_at,'%Y-%m-%d %H:%i:%s') transaction_date,e.name,t.jumlah_lot,t.jumlah_lembar,FORMAT(t.harga_beli,0) as harga_beli,FORMAT(t.total_bayar,0) as total_bayar ,FORMAT(t.sales_tax,0) as sales_tax from trading as t JOIN emiten as e ON e.id = t.id_emiten where t.jumlah_lot > 0";
         this.escape=[]
         this.queryEscape(this.sql, this.escape, (result) => {
             callback(result)

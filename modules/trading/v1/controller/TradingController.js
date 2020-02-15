@@ -61,7 +61,9 @@ export default class TradingController extends abstractBotEmiten {
                         'total_charge'  : charge
                     }
                     this.getModelTrading().updateTrading(data,exist.id,(updateTrading)=>{
-                        res.json(updateTrading)
+                        this.responseSuccess("success Buy",response=>{
+                            res.json(response)
+                        })
                     });
                 }else{
                     let jumlah_lot = req.body.jumlah_lot  
@@ -77,14 +79,14 @@ export default class TradingController extends abstractBotEmiten {
                         'sales_tax' : sales_tax
                     }
                     this.getModelTrading().createTrading(data,(insertTrading)=>{
-                        res.json(insertTrading)
+                        this.responseSuccess("success Buy",response=>{
+                            res.json(response)
+                        })
                     });
                 }
             })
         }
     }
-
-
 
     sell(req,res){
         let validation = []
@@ -102,22 +104,44 @@ export default class TradingController extends abstractBotEmiten {
         } else { 
             this.getModelTrading().checkExistTrading(req.params.idTrading,exist=>{
                 if(exist){
-                    let jumlah_lot = req.body.jumlah_lot  
-                    let jumlah_lembar = req.body.jumlah_lot * 100
-                    let harga_jual = req.body.harga_jual  
-                    let total_harga_jual = req.body.harga_jual  * jumlah_lembar
-                    let sell_tax=total_harga_jual * 0.0025;
-                    let data = {
-                        'id_trading'        :   req.params.idTrading,
-                        'jumlah_lot'        :   jumlah_lot,
-                        'jumlah_lembar'     :   jumlah_lembar,
-                        'harga_jual'        :   harga_jual,
-                        'total_harga_jual'  :   total_harga_jual,
-                        'sell_tax'          :   sell_tax
+                    console.log(exist.jumlah_lot);
+                    console.log(req.body.jumlah_lot)
+                    if(exist.jumlah_lot >= req.body.jumlah_lot ){
+                        let jumlah_lot = req.body.jumlah_lot  
+                        let jumlah_lembar = req.body.jumlah_lot * 100
+                        let harga_jual = req.body.harga_jual  
+                        let total_harga_jual = req.body.harga_jual  * jumlah_lembar
+                        let sell_tax=total_harga_jual * 0.0025;
+                        let data = {
+                            'id_trading'        :   req.params.idTrading,
+                            'jumlah_lot'        :   jumlah_lot,
+                            'jumlah_lembar'     :   jumlah_lembar,
+                            'harga_jual'        :   harga_jual,
+                            'total_harga_jual'  :   total_harga_jual,
+                            'sell_tax'          :   sell_tax
+                        }
+                        this.getModelTrading().sellTrading(data,(sellTrading)=>{
+                            let sisaLot = exist.jumlah_lot - jumlah_lot;
+                            let data = {
+                                'jumlah_lot'    : sisaLot,
+                                'jumlah_lembar' : sisaLot * 100,
+                                'harga_beli' : exist.harga_beli,
+                                "total_bayar":exist.total_bayar,
+                                'sales_tax' : exist.sales_tax
+                            }
+                            this.getModelTrading().updateTrading(data,exist.id,(updateTrading)=>{
+                                console.log("Update Lot")
+                            });
+                            this.responseSuccess("success Sell",response=>{
+                                res.json(response)
+                            })
+                        });
+                    }else{
+                        this.responseError("Jumlah Lot Tidah Sesuai Silahkan chech Jumlah Lot Anda",response=>{
+                            res.json(response);
+                        })
                     }
-                    this.getModelTrading().sellTrading(data,(sellTrading)=>{
-                        res.json(sellTrading)
-                    }); 
+                     
                 }else{
                     this.responseNotFound("Not Found ID Trading",(response)=>{
                         res.json(response)

@@ -28,10 +28,9 @@ export default class EmitenController extends abstractBotEmiten {
     create(req, res) {
         let validation = []
         let errors = []
-        // validation.push(this.isStringEmpty(req.body.bank_code) == false ? true : "bank_code is required")
-        validation.push(this.isStringEmpty(req.body.bank_name) == false ? true : "bank_name is required")
-        // validation.push(this.isStringEmpty(req.body.bank_swift) == false ? true : "bank_swift is required")
-        // validation.push(this.isStringEmpty(req.body.jumlah_vendor) == false ? true : "jumlah_vendor is required")
+        validation.push(this.isStringEmpty(req.body.code) == false ? true : "code is required")
+        validation.push(this.isStringEmpty(req.body.name) == false ? true : "name is required")
+        validation.push(this.isStringEmpty(req.body.type) == false ? true : "type is required")
         validation.forEach(element => {
             if (element != true) {
                 errors.push(element)
@@ -43,17 +42,28 @@ export default class EmitenController extends abstractBotEmiten {
             })
         } else {          
             let data = {
-                'bank_code' : req.body.bank_code,
-                'bank'  : req.body.bank_name,
-                'bank_swift' : req.body.bank_swift,
-                'jumlah_vendor' : req.body.jumlah_vendor
+                'code' : req.body.code,
+                'name' : req.body.name,
+                'type_emiten' : req.body.type,
             }
-            
-            this.getModelBank().insertBank(data,(insertBeneficiaryBank)=>{
-                
-            });
-            this.responseSuccess("Success Insert",(response)=>{
-                res.json(response)
+            this.getModelEmiten().checkExistEmiten(req.body.code,existEmiten=>{
+                if(existEmiten){
+                    this.responseError("Emiten Exist",response=>{
+                        res.json(response);
+                    })
+                }else{
+                    this.getModelEmiten().createEmiten(data,succes=>{
+                        if(succes){
+                            this.responseSuccess("Success Insert",(response)=>{
+                                res.json(response)
+                            })
+                        }else{
+                            this.responseError("error create emiten",response=>{
+                                res.json(response)
+                            })
+                        }
+                    });
+                }
             })
 
         }

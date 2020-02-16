@@ -4,8 +4,14 @@ import bodyParser from "body-parser"
 import helmet from "helmet"
 import config from "config"
 
-let app = express()
 
+
+import  abstractBotEmiten from "./library/abstractBotEmiten"
+
+
+var telegram = require('telegram-bot-api');
+
+let app = express()
 
 
 let apiRouter = express.Router()
@@ -41,6 +47,75 @@ import TradingController from "./modules/trading/v1/controller/TradingController
 new EmitenController(apiRouter);
 new BotController(apiRouter);
 new TradingController(apiRouter)
+
+
+
+
+var api = new telegram({
+	token: config.telegramToken,
+	updates: {
+        enabled: true
+    }
+});
+
+
+api.on('message', function(message)
+{
+	var text = message.text;
+	var array = text.split(" ")
+	if(array[0]==="/buy"){
+		var split = array[1].split(",")
+        let body = {
+            "code":split[0],
+            "jumlah_lot":split[1],
+            "harga_beli":split[2]
+        }
+        getAbstract().middlewarePOST("/trading",body,response=>{
+			api.sendMessage({
+				chat_id: message.chat.id,
+				text: "Data Pembelian sudah disimpan bro! semoga untung, amin.."
+			})
+        });
+	}
+	else if(array[0]==="/sell"){
+		var split = array[1].split(",")
+        let body = {
+            "code":split[0],
+            "jumlah_lot":split[1],
+            "harga_jual":split[2]
+        }
+        getAbstract().middlewarePOST("/trading/sell",body,response=>{
+			let  txt = response.message ? response.message : response.error_message;
+			api.sendMessage({
+				chat_id: message.chat.id,
+				text: txt
+			})
+        });
+	}
+	else{
+		api.sendMessage({
+			chat_id: message.chat.id,
+			text: "Sory bro feature belom tersedia"
+		})
+	}
+
+});
+
+
+
+
+function getAbstract(){
+    return  new abstractBotEmiten();
+}
+
+
+
+
+
+
+
+
+
 
 
 var port = config.port

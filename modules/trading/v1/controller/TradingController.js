@@ -164,13 +164,22 @@ export default class TradingController extends abstractBotEmiten {
                         let harga_jual = req.body.harga_jual  
                         let total_harga_jual = req.body.harga_jual  * jumlah_lembar
                         let sell_tax=total_harga_jual * 0.0025;
+
+                        //Untung Rugi
+                        let totalGainOrLostIdr = total_harga_jual - (exist.harga_beli * jumlah_lembar)
+                        let totalGainOrLostPercent = totalGainOrLostIdr / (exist.harga_beli * jumlah_lembar)
+
+
+
                         let data = {
                             'id_trading'        :   exist.idTrading,
                             'jumlah_lot'        :   jumlah_lot,
                             'jumlah_lembar'     :   jumlah_lembar,
                             'harga_jual'        :   harga_jual,
                             'total_harga_jual'  :   total_harga_jual,
-                            'sell_tax'          :   sell_tax
+                            'sell_tax'          :   sell_tax,
+                            'idr_gain_or_lost'  : totalGainOrLostIdr,
+                            'percent_gaint_or_lost' :totalGainOrLostPercent
                         }
                         this.getModelTrading().sellTrading(data,(sellTrading)=>{
                             let sisaLot = exist.jumlah_lot - jumlah_lot;
@@ -184,12 +193,12 @@ export default class TradingController extends abstractBotEmiten {
                             this.getModelTrading().updateTrading(data,exist.id,(updateTrading)=>{
                                 console.log("Update Lot")
                             });
-                            this.responseSuccess("success Sell",response=>{
+                            this.responseSuccess("Data Pejulan sudah disimpan bro! mantap,  untung apa rugi ? ",response=>{
                                 res.json(response)
                             })
                         });
                     }else{
-                        this.responseError("Jumlah Lot Tidah Sesuai Silahkan chech Jumlah Lot Anda",response=>{
+                        this.responseError("Jumlah Lot Tidah Sesuai Silahkan check Jumlah Lot Anda",response=>{
                             res.json(response);
                         })
                     }

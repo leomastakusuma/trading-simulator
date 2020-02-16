@@ -13,5 +13,6 @@
     "apiKey":"27L1L41IIB4A25QM",
     "timeInterval":"5min",
     "function":"TIME_SERIES_INTRADAY",
-    "urlTrading":"http://localhost:9090/v1"
+    "urlTrading":"http://localhost:9090/v1",
+    "telegramToken":"1048529604:AAEYJMfcvAcTLN2XV93Yt_0VOBT-iFI7xWY"
 }

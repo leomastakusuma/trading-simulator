@@ -23,8 +23,8 @@ export class TradingModel extends abstractQuery {
     }
 
     sellTrading(params,callback){
-        this.sql ="INSERT INTO portofolio (id_trading,jumlah_lot,jumlah_lembar,harga_jual,total_harga_jual,sell_tax) VALUES (?,?,?,?,?,?)"
-        this.escape = [params.id_trading, params.jumlah_lot,params.jumlah_lembar, params.harga_jual,params.total_harga_jual,params.sell_tax]
+        this.sql ="INSERT INTO portofolio (id_trading,jumlah_lot,jumlah_lembar,harga_jual,total_harga_jual,sell_tax,idr_gain_or_lost,percent_gaint_or_lost) VALUES (?,?,?,?,?,?,?,?)"
+        this.escape = [params.id_trading, params.jumlah_lot,params.jumlah_lembar, params.harga_jual,params.total_harga_jual,params.sell_tax,params.idr_gain_or_lost,params.percent_gaint_or_lost]
         this.queryEscape(this.sql, this.escape, (result) => {
             callback(result)
         })

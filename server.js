@@ -43,31 +43,6 @@ new BotController(apiRouter);
 new TradingController(apiRouter)
 
 
-var cron = require('node-cron');
-var moment = require('moment-timezone');
-var telegram = require('telegram-bot-api');
-
-
-
-
-
-
-
-var api = new telegram({
-    token: '1048529604:AAEYJMfcvAcTLN2XV93Yt_0VOBT-iFI7xWY'
-});
-
-function runCronJob() {
-
-  
-
-
-}
-runCronJob();
-
-
-
-
 var port = config.port
 try {
 	app.listen(port, "0.0.0.0", function () {

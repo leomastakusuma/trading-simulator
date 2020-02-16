@@ -8,7 +8,7 @@ export class TradingModel extends abstractQuery {
 	}
 
     listTrading(callback){
-        this.sql ="SELECT DATE_FORMAT(t.create_at,'%Y-%m-%d %H:%i:%s') transaction_date,e.name,t.jumlah_lot,t.jumlah_lembar,FORMAT(t.harga_beli,0) as harga_beli,FORMAT(t.total_bayar,0) as total_bayar ,FORMAT(t.sales_tax,0) as sales_tax from trading as t JOIN emiten as e ON e.id = t.id_emiten where t.jumlah_lot > 0";
+        this.sql ="SELECT DATE_FORMAT(t.create_at,'%Y-%m-%d %H:%i:%s') transaction_date,e.code,t.jumlah_lot,t.jumlah_lembar,FORMAT(t.harga_beli,0) as harga_beli,FORMAT(t.total_bayar,0) as total_bayar ,FORMAT(t.sales_tax,0) as sales_tax from trading as t JOIN emiten as e ON e.id = t.id_emiten where t.jumlah_lot > 0";
         this.escape=[]
         this.queryEscape(this.sql, this.escape, (result) => {
             callback(result)
@@ -47,7 +47,7 @@ export class TradingModel extends abstractQuery {
     }
 
     checkExistTrading(idTrading,callback){
-        this.sql ="SELECT * from trading t where t.id = ? limit ? ";
+        this.sql ="SELECT t.id as idTrading, e.*,t.* from trading t join emiten e on  e.id = t.id_emiten  where e.code= ? limit ? ";
         this.escape=[idTrading,1]
         this.queryEscape(this.sql, this.escape, (result) => {
             callback(result[0])

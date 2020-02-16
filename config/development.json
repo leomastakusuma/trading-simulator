@@ -12,5 +12,6 @@
     "url":"https://www.alphavantage.co/query?",
     "apiKey":"27L1L41IIB4A25QM",
     "timeInterval":"5min",
-    "function":"TIME_SERIES_INTRADAY"
+    "function":"TIME_SERIES_INTRADAY",
+    "urlTrading":"http://localhost:9090/v1"
 }

@@ -9,7 +9,7 @@ export default class TradingController extends abstractBotEmiten {
         this.router = props;
         this.router.post("/trading", this.create.bind(this))
         this.router.get("/trading", this.listAll.bind(this))
-        this.router.post("/trading/sell/:idTrading",this.sell.bind(this))
+        this.router.post("/trading/sell",this.sell.bind(this))
 
     }
 
@@ -30,7 +30,7 @@ export default class TradingController extends abstractBotEmiten {
     create(req, res) {
         let validation = []
         let errors = []
-        validation.push(this.isStringEmpty(req.body.id_emiten) == false ? true : "id_emiten is required")
+        validation.push(this.isStringEmpty(req.body.code) == false ? true : "code is required")
         validation.push(this.isStringEmpty(req.body.jumlah_lot) == false ? true : "jumlah_lot is required")
         validation.push(this.isStringEmpty(req.body.harga_beli) == false ? true : "harga_beli is required")
         validation.forEach(element => {
@@ -43,44 +43,98 @@ export default class TradingController extends abstractBotEmiten {
                 res.json(responseErrors)
             })
         } else {        
-            this.getModelTrading().checkExist(req.body.id_emiten,exist=>{
-                if(exist){
-                    let jumlah_lot = req.body.jumlah_lot + exist.jumlah_lot
-                    let jumlah_lembar = (req.body.jumlah_lot * 100) + exist.jumlah_lembar
-                    let total_bayar = (req.body.harga_beli  * (req.body.jumlah_lot * 100))
-                    let rataRataBeli = (total_bayar + exist.total_bayar)/jumlah_lembar
-                    let rataRataTotalBayar = rataRataBeli * jumlah_lembar
-                    let sales_tax=rataRataTotalBayar * 0.0015;
-                    let charge=rataRataTotalBayar * 0.0010;
-                    let data = {
-                        'jumlah_lot'    : jumlah_lot ,
-                        'jumlah_lembar' : jumlah_lembar,
-                        'harga_beli'    : rataRataBeli,
-                        "total_bayar"   : rataRataTotalBayar,
-                        'sales_tax'     : sales_tax,
-                        'total_charge'  : charge
-                    }
-                    this.getModelTrading().updateTrading(data,exist.id,(updateTrading)=>{
-                        this.responseSuccess("success Buy",response=>{
-                            res.json(response)
-                        })
-                    });
+            this.getModelEmiten().checkExistEmiten(req.body.code,existEmiten=>{
+                if(existEmiten){
+                    let idEmiten = existEmiten.id
+                    this.getModelTrading().checkExist(idEmiten,exist=>{
+                        if(exist){
+                            let jumlah_lot = +req.body.jumlah_lot + exist.jumlah_lot
+                            let jumlah_lembar = (req.body.jumlah_lot * 100) + exist.jumlah_lembar
+                            let total_bayar = (req.body.harga_beli  * (req.body.jumlah_lot * 100))
+                            let rataRataBeli = (total_bayar + exist.total_bayar)/jumlah_lembar
+                            let rataRataTotalBayar = rataRataBeli * jumlah_lembar
+                            let sales_tax=rataRataTotalBayar * 0.0015;
+                            let charge=rataRataTotalBayar * 0.0010;
+                            let data = {
+                                'jumlah_lot'    : jumlah_lot ,
+                                'jumlah_lembar' : jumlah_lembar,
+                                'harga_beli'    : rataRataBeli,
+                                "total_bayar"   : rataRataTotalBayar,
+                                'sales_tax'     : sales_tax,
+                                'total_charge'  : charge
+                            }
+                            this.getModelTrading().updateTrading(data,exist.id,(updateTrading)=>{
+                                this.responseSuccess("success Buy",response=>{
+                                    res.json(response)
+                                })
+                            });
+                        }else{
+                            let jumlah_lot = req.body.jumlah_lot  
+                            let jumlah_lembar = req.body.jumlah_lot * 100
+                            let total_bayar = req.body.harga_beli  * jumlah_lembar
+                            let sales_tax=total_bayar * 0.0015;
+                            let data = {
+                                'id_emiten' : idEmiten,
+                                'jumlah_lot'  : jumlah_lot,
+                                'jumlah_lembar':jumlah_lembar,
+                                'harga_beli' : req.body.harga_beli,
+                                "total_bayar":total_bayar,
+                                'sales_tax' : sales_tax
+                            }
+                            this.getModelTrading().createTrading(data,(insertTrading)=>{
+                                this.responseSuccess("success Buy",response=>{
+                                    res.json(response)
+                                })
+                            });
+                        }
+                    })
                 }else{
-                    let jumlah_lot = req.body.jumlah_lot  
-                    let jumlah_lembar = req.body.jumlah_lot * 100
-                    let total_bayar = req.body.harga_beli  * jumlah_lembar
-                    let sales_tax=total_bayar * 0.0015;
-                    let data = {
-                        'id_emiten' : req.body.id_emiten,
-                        'jumlah_lot'  : jumlah_lot,
-                        'jumlah_lembar':jumlah_lembar,
-                        'harga_beli' : req.body.harga_beli,
-                        "total_bayar":total_bayar,
-                        'sales_tax' : sales_tax
+                    let dataEmiten = {
+                        'code' : req.body.code
                     }
-                    this.getModelTrading().createTrading(data,(insertTrading)=>{
-                        this.responseSuccess("success Buy",response=>{
-                            res.json(response)
+                    this.getModelEmiten().createEmiten(dataEmiten,succes=>{
+                        let idEmiten = succes.id
+                        this.getModelTrading().checkExist(idEmiten,exist=>{
+                            if(exist){
+                                let jumlah_lot = req.body.jumlah_lot + exist.jumlah_lot
+                                let jumlah_lembar = (req.body.jumlah_lot * 100) + exist.jumlah_lembar
+                                let total_bayar = (req.body.harga_beli  * (req.body.jumlah_lot * 100))
+                                let rataRataBeli = (total_bayar + exist.total_bayar)/jumlah_lembar
+                                let rataRataTotalBayar = rataRataBeli * jumlah_lembar
+                                let sales_tax=rataRataTotalBayar * 0.0015;
+                                let charge=rataRataTotalBayar * 0.0010;
+                                let data = {
+                                    'jumlah_lot'    : jumlah_lot ,
+                                    'jumlah_lembar' : jumlah_lembar,
+                                    'harga_beli'    : rataRataBeli,
+                                    "total_bayar"   : rataRataTotalBayar,
+                                    'sales_tax'     : sales_tax,
+                                    'total_charge'  : charge
+                                }
+                                this.getModelTrading().updateTrading(data,exist.id,(updateTrading)=>{
+                                    this.responseSuccess("success Buy",response=>{
+                                        res.json(response)
+                                    })
+                                });
+                            }else{
+                                let jumlah_lot = req.body.jumlah_lot  
+                                let jumlah_lembar = req.body.jumlah_lot * 100
+                                let total_bayar = req.body.harga_beli  * jumlah_lembar
+                                let sales_tax=total_bayar * 0.0015;
+                                let data = {
+                                    'id_emiten' : idEmiten,
+                                    'jumlah_lot'  : jumlah_lot,
+                                    'jumlah_lembar':jumlah_lembar,
+                                    'harga_beli' : req.body.harga_beli,
+                                    "total_bayar":total_bayar,
+                                    'sales_tax' : sales_tax
+                                }
+                                this.getModelTrading().createTrading(data,(insertTrading)=>{
+                                    this.responseSuccess("success Buy",response=>{
+                                        res.json(response)
+                                    })
+                                });
+                            }
                         })
                     });
                 }
@@ -91,7 +145,7 @@ export default class TradingController extends abstractBotEmiten {
     sell(req,res){
         let validation = []
         let errors = []
-        validation.push(this.isStringEmpty(req.params.idTrading) == false ? true : "idTrading is required")
+        validation.push(this.isStringEmpty(req.body.code) == false ? true : "code is required")
         validation.forEach(element => {
             if (element != true) {
                 errors.push(element)
@@ -102,10 +156,8 @@ export default class TradingController extends abstractBotEmiten {
                 res.json(responseErrors)
             })
         } else { 
-            this.getModelTrading().checkExistTrading(req.params.idTrading,exist=>{
+            this.getModelTrading().checkExistTrading(req.body.code,exist=>{
                 if(exist){
-                    console.log(exist.jumlah_lot);
-                    console.log(req.body.jumlah_lot)
                     if(exist.jumlah_lot >= req.body.jumlah_lot ){
                         let jumlah_lot = req.body.jumlah_lot  
                         let jumlah_lembar = req.body.jumlah_lot * 100
@@ -113,7 +165,7 @@ export default class TradingController extends abstractBotEmiten {
                         let total_harga_jual = req.body.harga_jual  * jumlah_lembar
                         let sell_tax=total_harga_jual * 0.0025;
                         let data = {
-                            'id_trading'        :   req.params.idTrading,
+                            'id_trading'        :   exist.idTrading,
                             'jumlah_lot'        :   jumlah_lot,
                             'jumlah_lembar'     :   jumlah_lembar,
                             'harga_jual'        :   harga_jual,

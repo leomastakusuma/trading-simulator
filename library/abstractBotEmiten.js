@@ -21,8 +21,6 @@ export default class abstractBotEmiten extends abstractResponse {
 		return text
 	}
 
-	
-
 	generatePassword(salt, passwprd) {
 		const hash = crypto.createHmac("sha256", salt).update(passwprd).digest("hex")
 		return hash
@@ -138,7 +136,7 @@ export default class abstractBotEmiten extends abstractResponse {
 		return (!value || value == undefined || value == "" || value.length == 0)
 	}
 
-	middlewareGET(Symbol, callback) {
+	middlewareGETSimbol(Symbol, callback) {
 		request({
 			method: "GET",
 			url: "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol="+Symbol+".JK&interval=5min&outputsize=compact&apikey="+config.apiKey,
@@ -166,14 +164,15 @@ export default class abstractBotEmiten extends abstractResponse {
 		})
 	}
 
-	middlewarePOST(url, paramHeaders, paramsBody, callback) {
+	middlewarePOST(url, paramsBody, callback) {
 		request({
-			method: "GET",
-			url: config.url + url,
+			method: "POST",
+			url: config.urlTrading + url,
 			json: true,
-			headers: paramHeaders,
 			body: paramsBody
 		}, function (err, respon, body) {
+
+			console.log(body)
 			if (err) {
 				callback({
 					status: 500,
@@ -197,7 +196,33 @@ export default class abstractBotEmiten extends abstractResponse {
 	}
 
 	
+	middlewareGET(params, callback) {
+		request({
+			method: "GET",
+			url: config.apiKey,
+			json:true
+		}, function (err, respon, body) {
+			if (err) {
+				callback({
+					status: 500,
+					message: "error",
+					display_message: "Opps " + err.syscall + " " + err.code,
+					data: {}
+				})
+			} else {
+				let BadGateway = {
+					status: false,
+					error_message: "Opp someting wrong,please try again",
+				}
+				if (respon.statusCode == 404 || respon.statusCode == 500 || respon.statusCode == 502) {
+					callback(BadGateway)
+				} else {
+					callback(body)
+				}
+			}
 
+		})
+	}
 
 	
 }

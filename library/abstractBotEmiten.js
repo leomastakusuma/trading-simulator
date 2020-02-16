@@ -171,8 +171,6 @@ export default class abstractBotEmiten extends abstractResponse {
 			json: true,
 			body: paramsBody
 		}, function (err, respon, body) {
-
-			console.log(body)
 			if (err) {
 				callback({
 					status: 500,

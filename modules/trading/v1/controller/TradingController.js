@@ -193,7 +193,7 @@ export default class TradingController extends abstractBotEmiten {
                             this.getModelTrading().updateTrading(data,exist.id,(updateTrading)=>{
                                 console.log("Update Lot")
                             });
-                            this.responseSuccess("Data Pejulan sudah disimpan bro! mantap,  untung apa rugi ? ",response=>{
+                            this.responseSuccess("Data Pejulan sudah disimpan bro! mantap,  untung apa rugi ?` ",response=>{
                                 res.json(response)
                             })
                         });

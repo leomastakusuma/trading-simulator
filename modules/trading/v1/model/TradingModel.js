@@ -39,7 +39,7 @@ export class TradingModel extends abstractQuery {
     }
 
     checkExist(Symbol,callback){
-        this.sql ="SELECT * from trading t where t.id_emiten = ? limit ? ";
+        this.sql ="SELECT * from trading t where t.id_emiten = ? and   t.jumlah_lot > 0 limit ?  ";
         this.escape=[Symbol,1]
         this.queryEscape(this.sql, this.escape, (result) => {
             callback(result[0])
@@ -47,7 +47,7 @@ export class TradingModel extends abstractQuery {
     }
 
     checkExistTrading(idTrading,callback){
-        this.sql ="SELECT t.id as idTrading, e.*,t.* from trading t join emiten e on  e.id = t.id_emiten  where e.code= ? limit ? ";
+        this.sql ="SELECT t.id as idTrading, e.*,t.* from trading t join emiten e on  e.id = t.id_emiten  where e.code= ?  and t.jumlah_lot > 0 limit ? ";
         this.escape=[idTrading,1]
         this.queryEscape(this.sql, this.escape, (result) => {
             callback(result[0])

@@ -88,7 +88,7 @@ api.on('message', function(message)
 			let  txt = response.message ? response.message : response.error_message;
 			api.sendMessage({
 				chat_id: message.chat.id,
-				text: txt
+				text: "Data Penjualan sudah disimpan bro! untung gak ?.."
 			})
         });
 	}

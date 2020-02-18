@@ -158,18 +158,16 @@ export default class TradingController extends abstractBotEmiten {
         } else { 
             this.getModelTrading().checkExistTrading(req.body.code,exist=>{
                 if(exist){
-                    if(exist.jumlah_lot >= req.body.jumlah_lot ){
+                    if(exist.jumlah_lot >= +req.body.jumlah_lot ){
                         let jumlah_lot = req.body.jumlah_lot  
                         let jumlah_lembar = req.body.jumlah_lot * 100
-                        let harga_jual = req.body.harga_jual  
+                        let harga_jual = +req.body.harga_jual  
                         let total_harga_jual = req.body.harga_jual  * jumlah_lembar
                         let sell_tax=total_harga_jual * 0.0025;
 
                         //Untung Rugi
                         let totalGainOrLostIdr = total_harga_jual - (exist.harga_beli * jumlah_lembar)
-                        let totalGainOrLostPercent = totalGainOrLostIdr / (exist.harga_beli * jumlah_lembar)
-
-
+                        let totalGainOrLostPercent = totalGainOrLostIdr / (harga_jual * jumlah_lembar)
 
                         let data = {
                             'id_trading'        :   exist.idTrading,
@@ -179,8 +177,11 @@ export default class TradingController extends abstractBotEmiten {
                             'total_harga_jual'  :   total_harga_jual,
                             'sell_tax'          :   sell_tax,
                             'idr_gain_or_lost'  : totalGainOrLostIdr,
-                            'percent_gaint_or_lost' :totalGainOrLostPercent
+                            'percent_gaint_or_lost' : (totalGainOrLostPercent*100)
                         }
+
+                        console.log(data);
+
                         this.getModelTrading().sellTrading(data,(sellTrading)=>{
                             let sisaLot = exist.jumlah_lot - jumlah_lot;
                             let data = {
@@ -193,6 +194,7 @@ export default class TradingController extends abstractBotEmiten {
                             this.getModelTrading().updateTrading(data,exist.id,(updateTrading)=>{
                                 console.log("Update Lot")
                             });
+
                             this.responseSuccess("Data Pejulan sudah disimpan bro! mantap,  untung apa rugi ?` ",response=>{
                                 res.json(response)
                             })

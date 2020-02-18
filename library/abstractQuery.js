@@ -3,7 +3,7 @@ import config from "config"
 let dbConfig = config.dbConfig
 
 //CONECTION
-const Connection = mysql.createConnection({
+const Connection = mysql.createPool({
     host: dbConfig.host,
     user: dbConfig.user,
 	password: dbConfig.password,

@@ -2,11 +2,11 @@
     "env" : "dev",
     "port":9090,
     "dbConfig": {
-        "host": "localhost",
+        "host": "149.129.252.136",
         "port": 3360,
-        "user": "root",
-        "password" : "password",
-        "database": "botSaham"
+        "user": "remote",
+        "password" : "mypa$$",
+        "database": "remote"
     },
     "queryLog":1,
     "url":"https://www.alphavantage.co/query?",

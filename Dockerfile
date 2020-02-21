@@ -1,6 +1,6 @@
 FROM node:8-alpine
-WORKDIR /usr/src
 RUN apk update && apk add git
+WORKDIR /usr/src
 RUN git clone https://github.com/leomastakusuma/trading-simulator
 WORKDIR /usr/src/trading-simulator
 RUN npm install

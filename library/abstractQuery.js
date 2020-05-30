@@ -12,7 +12,6 @@ const Connection = mysql.createPool({
 })
 
 
-console.log(config.dbConfig.password)
 export default class abstractQuery {
 	queryEscape(Query, Params, callback) {
 		let Log = Connection.query(Query, Params, function (err, results) {

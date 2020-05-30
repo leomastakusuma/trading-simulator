@@ -64,6 +64,8 @@ export default class TradingController extends abstractBotEmiten {
                                 'total_charge'  : charge
                             }
                             this.getModelTrading().updateTrading(data,exist.id,(updateTrading)=>{
+                                const total = total_bayar + sales_tax
+                                this.getModelTrading().updateSaldo(total,'buy',(updateSal)=>{})
                                 this.responseSuccess("success Buy",response=>{
                                     res.json(response)
                                 })
@@ -82,6 +84,8 @@ export default class TradingController extends abstractBotEmiten {
                                 'sales_tax' : sales_tax
                             }
                             this.getModelTrading().createTrading(data,(insertTrading)=>{
+                                const total = total_bayar + sales_tax
+                                this.getModelTrading().updateSaldo(total,'buy',(updateSal)=>{})
                                 this.responseSuccess("success Buy",response=>{
                                     res.json(response)
                                 })
@@ -112,8 +116,10 @@ export default class TradingController extends abstractBotEmiten {
                                     'total_charge'  : charge
                                 }
                                 this.getModelTrading().updateTrading(data,exist.id,(updateTrading)=>{
-                                    this.responseSuccess("success Buy",response=>{
-                                        res.json(response)
+                                    const total = total_bayar + sales_tax
+                                    this.getModelTrading().updateSaldo(total,'buy',(updateSal)=>{})
+                                    this.responseSuccess("success Buy",updateTrading=>{
+                                        res.json(updateTrading)
                                     })
                                 });
                             }else{
@@ -130,6 +136,8 @@ export default class TradingController extends abstractBotEmiten {
                                     'sales_tax' : sales_tax
                                 }
                                 this.getModelTrading().createTrading(data,(insertTrading)=>{
+                                    const total = total_bayar + sales_tax
+                                    this.getModelTrading().updateSaldo(total,'buy',(updateSal)=>{})
                                     this.responseSuccess("success Buy",response=>{
                                         res.json(response)
                                     })
@@ -176,13 +184,16 @@ export default class TradingController extends abstractBotEmiten {
                             'harga_jual'        :   harga_jual,
                             'total_harga_jual'  :   total_harga_jual,
                             'sell_tax'          :   sell_tax,
-                            'idr_gain_or_lost'  : totalGainOrLostIdr,
+                            'idr_gain_or_lost'  :   totalGainOrLostIdr,
                             'percent_gaint_or_lost' : (totalGainOrLostPercent*100)
                         }
 
-                        console.log(data);
-
                         this.getModelTrading().sellTrading(data,(sellTrading)=>{
+
+                            const total = total_harga_jual - sell_tax
+                            this.getModelTrading().updateSaldo(total,'sell',(updateSal)=>{})
+
+
                             let sisaLot = exist.jumlah_lot - jumlah_lot;
                             let data = {
                                 'jumlah_lot'    : sisaLot,
@@ -191,9 +202,7 @@ export default class TradingController extends abstractBotEmiten {
                                 "total_bayar":exist.total_bayar,
                                 'sales_tax' : exist.sales_tax
                             }
-                            this.getModelTrading().updateTrading(data,exist.id,(updateTrading)=>{
-                                console.log("Update Lot")
-                            });
+                            this.getModelTrading().updateTrading(data,exist.id,(updateTrading)=>{});
 
                             this.responseSuccess("Data Pejulan sudah disimpan bro! mantap,  untung apa rugi ?` ",response=>{
                                 res.json(response)

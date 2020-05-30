@@ -54,5 +54,40 @@ export class TradingModel extends abstractQuery {
         })
     }
 
+    saldo(){
+        this.sql ="SELECT * from Account";
+        this.escape=[]
+        this.queryEscape(this.sql, this.escape, (result) => {
+            callback(result[0])
+        })
+    }
+    updateSaldo(cost,type,callback){
+        this.sql ="SELECT * from Account";
+        this.escape=[]
+        this.queryEscape(this.sql, this.escape, (result) => {
+            if(type==='buy'){
+                let lastSaldo = result[0].balance
+                let update = lastSaldo - cost
+                this.sql ="UPDATE Account set balance = ? "
+                this.escape = [update]
+                this.queryEscape(this.sql, this.escape, (result) => {
+                    callback(result)
+                })
+            }
+            if(type==='sell'){
+                let lastSaldo = result[0].balance
+                let update = lastSaldo + cost
+                this.sql ="UPDATE Account set balance = ? "
+                this.escape = [update]
+                this.queryEscape(this.sql, this.escape, (result) => {
+                    callback(result)
+                })
+            }
+        })
+
+
+       
+    }
+
 }
 
